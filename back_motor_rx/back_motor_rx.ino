@@ -1,7 +1,7 @@
-#include <SPI.h> //back
-#include <mcp2515.h>
+//back
 
-//----------------------------------------------------------------------------------
+#include <SPI.h> 
+#include <mcp2515.h>
 #include <Wire.h> // 모터 테스트
 #include <Adafruit_PWMServoDriver.h>
 
@@ -14,7 +14,6 @@ Adafruit_PWMServoDriver pwm_motor = Adafruit_PWMServoDriver(0x5F);
 
 struct can_frame canMsg;
 struct can_frame canMsg1;
-struct can_frame canMsg2;
 MCP2515 mcp2515(4);
 
 void setup() {
@@ -25,7 +24,7 @@ void setup() {
   mcp2515.reset();
   mcp2515.setBitrate(CAN_500KBPS, MCP_8MHZ);
   mcp2515.setNormalMode();
-}
+} 
 
 void loop(){
     if (mcp2515.readMessage(&canMsg) == MCP2515::ERROR_OK) {
