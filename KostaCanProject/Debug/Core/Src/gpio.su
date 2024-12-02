@@ -1,0 +1,2 @@
+../Core/Src/gpio.c:31:5:_write	24	static
+../Core/Src/gpio.c:51:6:MX_GPIO_Init	40	static

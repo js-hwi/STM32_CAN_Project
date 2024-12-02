@@ -65,7 +65,7 @@ void loop(){
   //초음파
   unsigned long currentMillis = millis();
   if (currentMillis - previousCANMillis >= CANInterval) {
-    previousCANMillis = currentMillis;
+    previousCA`NMillis = currentMillis;
     distance = getDistance();  // ultrasonic
     
     canMsg1.can_id  = 0xF6;
