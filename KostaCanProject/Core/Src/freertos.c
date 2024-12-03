@@ -51,7 +51,6 @@
 /* USER CODE BEGIN Variables */
 extern CAN_HandleTypeDef hcan;
 extern UART_HandleTypeDef uart2;
-extern UART_HandleTypeDef uart1;
 
 CAN_RxHeaderTypeDef rxHeader; //CAN Bus Transmit Header
 CAN_TxHeaderTypeDef txHeader; //CAN Bus Receive Header
@@ -62,13 +61,14 @@ uint8_t csend[8];
 CAN_FilterTypeDef canfil; //CAN Bus Filter
 uint32_t canMailbox; //CAN Bus Mail box variable
 
+char data[20] = "Hello, world\r\n";
+
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId myTask02Handle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void const * argument);
@@ -98,6 +98,7 @@ void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackTy
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
+	MX_USART2_UART_Init();
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -168,9 +169,14 @@ void StartDefaultTask(void const * argument)
 	  for(;;)
 	  {
 		  HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-		  uint8_t csend[] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08};
-		  HAL_CAN_AddTxMessage(&hcan,&txHeader,csend,&canMailbox);
-		  osDelay(100);
+		  static uint8_t counter = 0;
+		  printf("%s", data);
+		  uint8_t csend[] = {counter,0x02,0x03,0x04,0x05,0x06,0x07,0x08};
+		  if (HAL_CAN_AddTxMessage(&hcan, &txHeader, csend, &canMailbox) != HAL_OK) {
+
+		  }
+		  counter++;
+		  osDelay(500);
 	  }
 
   /* USER CODE END StartDefaultTask */
@@ -200,6 +206,11 @@ void StartTask02(void const * argument)
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1)
 {
 	HAL_CAN_GetRxMessage(hcan1, CAN_RX_FIFO0, &rxHeader, canRX);
+	//if (rxHeader.StdId == 0xF6) {
+	//	HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+	//}
+
 }
+
 /* USER CODE END Application */
 
