@@ -22,11 +22,7 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN 0 */
-extern UART_HandleTypeDef huart2;
-int _write(int file, char *p, int len){
-	HAL_UART_Transmit(&huart2, (uint8_t *)p, len, 10);
-	return len;
-}
+
 /* USER CODE END 0 */
 
 /*----------------------------------------------------------------------------*/
@@ -51,8 +47,8 @@ void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIO_LED_GPIO_Port, GPIO_LED_Pin, GPIO_PIN_SET);

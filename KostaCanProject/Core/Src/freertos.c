@@ -22,12 +22,9 @@
 #include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
-#include "fnd_controller.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdio.h>
-#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -37,9 +34,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define slow_mode 5;
-#define average_mode 12;
-#define fast_mode 25;
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -50,18 +44,15 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
 extern CAN_HandleTypeDef hcan;
-extern UART_HandleTypeDef uart2;
 
 CAN_RxHeaderTypeDef rxHeader; //CAN Bus Transmit Header
 CAN_TxHeaderTypeDef txHeader; //CAN Bus Receive Header
 
-uint8_t canRX[8];  //CAN Bus Receive Buffer
-uint8_t csend[8];
+uint8_t canRX[8] = {0,0,0,0,0,0,0,0};  //CAN Bus Receive Buffer
+uint8_t csend[] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08};
 
 CAN_FilterTypeDef canfil; //CAN Bus Filter
 uint32_t canMailbox; //CAN Bus Mail box variable
-
-char data[20] = "Hello, world\r\n";
 
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
@@ -73,6 +64,7 @@ osThreadId myTask02Handle;
 
 void StartDefaultTask(void const * argument);
 void StartTask02(void const * argument);
+
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* GetIdleTaskMemory prototype (linked to static allocation support) */
@@ -98,7 +90,6 @@ void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackTy
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-	MX_USART2_UART_Init();
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -143,41 +134,38 @@ void StartDefaultTask(void const * argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
-	  canfil.FilterBank = 0;
-	  canfil.FilterMode = CAN_FILTERMODE_IDMASK;
-	  canfil.FilterFIFOAssignment = CAN_RX_FIFO0;
-	  canfil.FilterIdHigh = 0;
-	  canfil.FilterIdLow = 0;
-	  canfil.FilterMaskIdHigh = 0;
-	  canfil.FilterMaskIdLow = 0;
-	  canfil.FilterScale = CAN_FILTERSCALE_32BIT;
-	  canfil.FilterActivation = ENABLE;
-	  canfil.SlaveStartFilterBank = 14;
+	canfil.FilterBank = 0;
+		  canfil.FilterMode = CAN_FILTERMODE_IDMASK;
+		  canfil.FilterFIFOAssignment = CAN_RX_FIFO0;
+		  canfil.FilterIdHigh = 0;
+		  canfil.FilterIdLow = 0;
+		  canfil.FilterMaskIdHigh = 0;
+		  canfil.FilterMaskIdLow = 0;
+		  canfil.FilterScale = CAN_FILTERSCALE_32BIT;
+		  canfil.FilterActivation = ENABLE;
+		  canfil.SlaveStartFilterBank = 14;
 
-	  txHeader.DLC = 8;
-	  txHeader.IDE = CAN_ID_STD;
-	  txHeader.RTR = CAN_RTR_DATA;
-	  txHeader.StdId = 0xAAA;
-	  //txHeader.ExtId = 0x02;
-	  txHeader.TransmitGlobalTime = DISABLE;
+		  txHeader.DLC = 8;
+		  txHeader.IDE = CAN_ID_STD;
+		  txHeader.RTR = CAN_RTR_DATA;
+		  txHeader.StdId = 0x40;
+		  //txHeader.ExtId = 0x02;
+		  txHeader.TransmitGlobalTime = DISABLE;
 
-	  HAL_CAN_ConfigFilter(&hcan,&canfil);
-	  HAL_CAN_Start(&hcan);
-	  HAL_CAN_ActivateNotification(&hcan,CAN_IT_RX_FIFO0_MSG_PENDING);
+		  HAL_CAN_ConfigFilter(&hcan,&canfil);
+		  HAL_CAN_Start(&hcan);
+		  HAL_CAN_ActivateNotification(&hcan,CAN_IT_RX_FIFO0_MSG_PENDING);
 
-	  /* Infinite loop */
-	  for(;;)
-	  {
-		  HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-		  static uint8_t counter = 0;
-		  printf("%s", data);
-		  uint8_t csend[] = {counter,0x02,0x03,0x04,0x05,0x06,0x07,0x08};
-		  if (HAL_CAN_AddTxMessage(&hcan, &txHeader, csend, &canMailbox) != HAL_OK) {
+		  /* Infinite loop */
+		  for(;;)
+		  {
+			  uint8_t csend[] = {0xAA,0x02,0x03,0x04,0x05,0x06,0x07,0x08};
+			  HAL_CAN_AddTxMessage(&hcan,&txHeader,csend,&canMailbox);
 
+			  //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+
+			  osDelay(1000);
 		  }
-		  counter++;
-		  osDelay(500);
-	  }
 
   /* USER CODE END StartDefaultTask */
 }
@@ -206,8 +194,11 @@ void StartTask02(void const * argument)
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1)
 {
 	HAL_CAN_GetRxMessage(hcan1, CAN_RX_FIFO0, &rxHeader, canRX);
-	//if (rxHeader.StdId == 0xF6) {
-	//	HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+	HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+
+
+	//if (rxHeader.StdId == 0x0F6) {
+		//HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 	//}
 
 }
