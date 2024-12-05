@@ -1,0 +1,5 @@
+../Core/Src/freertos.c:88:6:vApplicationGetIdleTaskMemory	24	static
+../Core/Src/freertos.c:102:6:MX_FREERTOS_Init	72	static
+../Core/Src/freertos.c:144:6:StartDefaultTask	32	static
+../Core/Src/freertos.c:230:6:StartTask02	24	static
+../Core/Src/freertos.c:338:6:HAL_CAN_RxFifo0MsgPendingCallback	24	static

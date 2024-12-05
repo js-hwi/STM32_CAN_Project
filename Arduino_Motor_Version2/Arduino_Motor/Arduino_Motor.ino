@@ -38,6 +38,10 @@ void motorPWM(int channel, int motor_speed); //모터 속도
 void Motor(int Motor_ID, int dir, int Motor_speed); // 현재 속도 반환
 void Init_MotorVelocity();
 
+
+
+//***********************************setup*********************************//
+
 void setup() {
   Serial.begin(115200); // 시리얼 통신 시작
   
@@ -52,6 +56,10 @@ void setup() {
   
   Init_MotorVelocity();
 }
+
+
+//***********************************loop*********************************//
+
 
 void loop() {
   // CAN 메시지 구성
@@ -72,8 +80,8 @@ void loop() {
   mcp2515.readMessage(&canMsg2); // 수신 요청
   if(canMsg2.can_id == 0x77){
       Serial.println("canMsg를 수신했습니다.");
-      Motor(1,1,canMsg2.data[1]);
-      Motor(2,1,canMsg2.data[1]);
+      //Motor(1,1,canMsg2.data[1]);
+      //Motor(2,1,canMsg2.data[1]);
   }
   delay(1000); // 1초 대기
 }
@@ -165,8 +173,7 @@ void Motor(int Motor_ID, int dir, int Motor_speed){
 }
 
 void Init_MotorVelocity(){
-      Motor(1, 1, 40); // M1, forward rotation, fast rotation.
-      Motor(2, 1, 40);  // M2, forward rotation,low rotation.
-      currentVelocity = 40;
+      Motor(1, 1, 0); // M1, forward rotation, fast rotation.
+      Motor(2, 1, 0);  // M2, forward rotation,low rotation.
+      currentVelocity = 0;
 }
-
