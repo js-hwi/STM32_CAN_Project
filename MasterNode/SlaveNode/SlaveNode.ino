@@ -12,7 +12,7 @@ void setup() {
 
   pinMode(LED_BUILTIN, OUTPUT); 
   pinMode(LED_PIN, OUTPUT); 
-  //pinMode(buzzer, OUTPUT); // 부저 핀을 출력 모드로 설정
+  pinMode(buzzer, OUTPUT); // 부저 핀을 출력 모드로 설정
 
   Wire.begin(8); // 슬레이브 주소: 8
   Wire.onReceive(receiveEvent);  // 마스터가 데이터를 보낼 때 호출되는 함수
@@ -21,7 +21,7 @@ void setup() {
 }
 
 void loop() {
-
+  
   delay(1000);
 }
 
