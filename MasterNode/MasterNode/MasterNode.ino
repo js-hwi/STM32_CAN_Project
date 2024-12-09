@@ -2,7 +2,7 @@
 #include <Wire.h>
 #include <mcp2515.h>
 
-int sendValue = 2; // 슬레이브로 보낼 데이터
+int sendValue = 3; // 슬레이브로 보낼 데이터
 struct can_frame canMsg2;
 MCP2515 mcp2515(4);
 
